@@ -26,7 +26,7 @@ namespace TradingPlaces.WebApi.Collections
                 throw new ArgumentException(nameof(strategyDetails.Instruction));
 
             var tickerStrategies = strategies[(int)strategyDetails.Instruction]
-                .GetOrAdd(strategyDetails.Ticker.ToLower(), new ConcurrentDictionary<string, Strategy>());
+                .GetOrAdd(strategyDetails.Ticker.ToLower(), (t) => new ConcurrentDictionary<string, Strategy>());
 
             var strategy = strategyDetails.ToStrategy(currentPrice);
             tickerStrategies[strategy.Id] = strategy;
@@ -39,7 +39,7 @@ namespace TradingPlaces.WebApi.Collections
             if (strategiesById.TryRemove(id.ToLower(), out var strategy))
             {
                 var tickerStrategies = strategies[(int)strategy.Details.Instruction]
-                    .GetOrAdd(strategy.Details.Ticker.ToLower(), new ConcurrentDictionary<string, Strategy>());
+                    .GetOrAdd(strategy.Details.Ticker.ToLower(), (t) => new ConcurrentDictionary<string, Strategy>());
                 return tickerStrategies.Remove(id.ToLower(), out _);
             }
             return false;
