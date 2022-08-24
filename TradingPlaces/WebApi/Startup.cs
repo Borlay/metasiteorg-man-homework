@@ -5,9 +5,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Reutberg;
 using Serilog;
 using Serilog.Events;
 using Swashbuckle.AspNetCore.Swagger;
+using TradingPlaces.WebApi.Collections;
 using TradingPlaces.WebApi.Filters;
 using TradingPlaces.WebApi.Services;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
@@ -31,6 +33,8 @@ namespace TradingPlaces.WebApi
                     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 });
 
+            services.AddSingleton<StrategyCollection>();
+            services.AddSingleton<IReutbergService, ReutbergService>();
             services.AddHostedService<StrategyManagementService>();
             services.AddSingleton<IHostedServiceAccessor<IStrategyManagementService>, HostedServiceAccessor<IStrategyManagementService>>();
         }

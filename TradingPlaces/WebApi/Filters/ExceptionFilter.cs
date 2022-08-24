@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using System;
 
 namespace TradingPlaces.WebApi.Filters
 {
@@ -8,10 +9,20 @@ namespace TradingPlaces.WebApi.Filters
     {
         public override void OnException(ExceptionContext exceptionContext)
         {
-            exceptionContext.Result = new ObjectResult(exceptionContext.Exception.Message)
+            if (exceptionContext.Exception is ArgumentException ae)
             {
-                StatusCode = StatusCodes.Status500InternalServerError
-            };
+                exceptionContext.Result = new ObjectResult(exceptionContext.Exception.Message)
+                {
+                    StatusCode = StatusCodes.Status400BadRequest
+                };
+            }
+            else
+            {
+                exceptionContext.Result = new ObjectResult(exceptionContext.Exception.Message)
+                {
+                    StatusCode = StatusCodes.Status500InternalServerError
+                };
+            }
 
             base.OnException(exceptionContext);
         }

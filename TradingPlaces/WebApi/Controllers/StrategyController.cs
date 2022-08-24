@@ -25,7 +25,22 @@ namespace TradingPlaces.WebApi.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, "OK", typeof(string))]
         public IActionResult RegisterStrategy(StrategyDetailsDto strategyDetails)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if(strategyDetails == null) 
+                    throw new ArgumentNullException(nameof(strategyDetails));
+                if(string.IsNullOrWhiteSpace(strategyDetails.Ticker)) 
+                    throw new ArgumentNullException(nameof(strategyDetails.Ticker));
+                if (strategyDetails.Quantity == 0)
+                    throw new ArgumentNullException(nameof(strategyDetails.Quantity));
+
+                return Ok(_strategyManagementService.Service.AddStrategy(strategyDetails));
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to register strategy for ticker '{strategyDetails.Ticker}'");
+                throw;
+            }
         }
 
         [HttpDelete("{id}")]
@@ -34,7 +49,16 @@ namespace TradingPlaces.WebApi.Controllers
         [SwaggerResponse(StatusCodes.Status404NotFound, "Not Found")]
         public IActionResult UnregisterStrategy(string id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _strategyManagementService.Service.RemoveStrategy(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to remove strategy '{id}'");
+                throw;
+            }
         }
     }
 }
